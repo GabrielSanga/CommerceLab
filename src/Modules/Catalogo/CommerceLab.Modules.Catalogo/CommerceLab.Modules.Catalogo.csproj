@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\" />
+    <Folder Include="Infrastructure\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
+    <ProjectReference Include="..\CommerceLab.Modules.Catalogo.Contracts\CommerceLab.Modules.Catalogo.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
