@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/CommerceLab.Host/CommerceLab.Host.csproj" Id="d1fbe248-20af-452e-99df-9e5a414e7f80" />
+    <Project Path="src/CommerceLab.Shared/CommerceLab.Shared.csproj" Id="96fcc64d-0a9a-47fe-b24a-8be6499ca9e4" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Catalogo/">
+    <Project Path="src/Modules/Catalogo/CommerceLab.Modules.Catalogo.Contracts/CommerceLab.Modules.Catalogo.Contracts.csproj" Id="8bd22cdd-96c3-4fa7-ae1e-f8d11772bfd7" />
+    <Project Path="src/Modules/Catalogo/CommerceLab.Modules.Catalogo/CommerceLab.Modules.Catalogo.csproj" Id="879530bb-15ac-47cf-904e-295bbbff5e0f" />
+  </Folder>
+  <Folder Name="/src/Modules/Cliente/" />
+  <Folder Name="/src/Modules/Venda/" />
+</Solution>

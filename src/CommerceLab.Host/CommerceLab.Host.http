@@ -1,0 +1,6 @@
+@CommerceLab.Host_HostAddress = http://localhost:5185
+
+GET {{CommerceLab.Host_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,97 @@
+<div id="cd3"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const themeMode = document.documentElement.dataset.mode;
+const dark = themeMode ? themeMode === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"anthropic-sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"anthropic-sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+  },
+});
+const { svg } = await mermaid.render('cd3-svg', `classDiagram
+direction TB
+class Cliente {
+  +UUID id
+  +string nome
+  +string email
+  +string documento
+  +datetime criadoEm
+  +adicionarEndereco(Endereco)
+}
+class Endereco {
+  +UUID id
+  +string logradouro
+  +string numero
+  +string cidade
+  +string uf
+  +string cep
+}
+class Pedido {
+  +UUID id
+  +string numero
+  +datetime dataCriacao
+  +PedidoStatus status
+  +decimal valorTotal
+  +adicionarItem(Produto, int, decimal)
+  +removerItem(UUID)
+  +calcularTotal()
+  +confirmar()
+  +marcarComoPago()
+  +cancelar()
+}
+class ItemPedido {
+  +UUID id
+  +int quantidade
+  +decimal precoUnitario
+  +calcularSubtotal() decimal
+}
+class Produto {
+  +UUID id
+  +string nome
+  +string descricao
+  +string sku
+  +decimal preco
+  +boolean ativo
+  +datetime criadoEm
+  +datetime atualizadoEm
+  +alterarPreco(decimal)
+  +ativar()
+  +desativar()
+}
+class Estoque {
+  +UUID id
+  +int quantidadeDisponivel
+  +int quantidadeReservada
+  +int version
+  +datetime atualizadoEm
+  +adicionar(int)
+  +reservar(int)
+  +baixar(int)
+  +liberarReserva(int)
+}
+class PedidoStatus {
+  <<enumeration>>
+  CRIADO
+  AGUARDANDO_PAGAMENTO
+  PAGO
+  ENVIADO
+  ENTREGUE
+  CANCELADO
+}
+Cliente "1" --> "0..*" Endereco
+Cliente "1" --> "0..*" Pedido : realiza
+Pedido "1" *-- "1..*" ItemPedido
+Pedido "0..*" --> "1" Endereco : entrega
+ItemPedido "0..*" --> "1" Produto
+Produto "1" --> "1" Estoque
+Pedido ..> PedidoStatus`);
+document.getElementById('cd3').innerHTML = svg;
+</script>
