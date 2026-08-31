@@ -1,6 +1,55 @@
-@CommerceLab.Host_HostAddress = http://localhost:5185
+@CommerceLab.Host_HostAddress = https://localhost:7273
+@sku = TEC-K2-BR
 
-GET {{CommerceLab.Host_HostAddress}}/weatherforecast/
+### 1. Cadastro válido -> 201 Created + Location
+POST {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos
+Content-Type: application/json
+
+{
+  "nome": "Teclado Mecânico K2",
+  "descricao": "ABNT2, switch marrom",
+  "sku": "{{sku}}",
+  "preco": 349.90,
+  "quantidadeInicial": 10
+}
+
+### 2. Mesmo SKU em caixa baixa -> 409 PRODUTO_SKU_DUPLICADO
+POST {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos
+Content-Type: application/json
+
+{
+  "nome": "Teclado Mecânico K2 (duplicado)",
+  "sku": "tec-k2-br",
+  "preco": 349.90
+}
+
+### 3. Preço com três casas decimais -> 400 PRODUTO_PRECO_INVALIDO
+POST {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos
+Content-Type: application/json
+
+{
+  "nome": "Mouse Vertical MX",
+  "sku": "MOU-MX-01",
+  "preco": 10.999,
+  "quantidadeInicial": 5
+}
+
+### 4. Detalhe do produto -> 200
+GET {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos/00000000-0000-0000-0000-000000000000
 Accept: application/json
 
-###
+### 5. Produto inexistente -> 404 PRODUTO_NAO_ENCONTRADO
+GET {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos/11111111-1111-1111-1111-111111111111
+Accept: application/json
+
+### 6. Listagem completa -> 200
+GET {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos
+Accept: application/json
+
+### 7. Listagem filtrada por termo (casa em nome ou SKU) -> 200
+GET {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos?termo=teclado
+Accept: application/json
+
+### 8. Listagem só de inativos -> 200 com lista vazia
+GET {{CommerceLab.Host_HostAddress}}/api/catalogo/produtos?ativo=false
+Accept: application/json

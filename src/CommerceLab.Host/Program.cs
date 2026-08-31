@@ -5,12 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddModules(builder.Configuration);
 
 var app = builder.Build();
-
-app.Logger.LogInformation("Módulos carregados: {Modulos}",  string.Join(", ", app.Services.GetServices<IModule>().Select(module => module.Name)));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
