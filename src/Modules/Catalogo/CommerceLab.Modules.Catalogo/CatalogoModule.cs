@@ -1,4 +1,9 @@
-using CommerceLab.Modules.Catalogo.Presentation;
+using CommerceLab.Modules.Catalogo.Application.Abstracoes;
+using CommerceLab.Modules.Catalogo.Application.Produtos.CadastrarProduto;
+using CommerceLab.Modules.Catalogo.Application.Produtos.ListarProdutos;
+using CommerceLab.Modules.Catalogo.Application.Produtos.ObterProdutoPorId;
+using CommerceLab.Modules.Catalogo.Infrastructure.Persistencia;
+using CommerceLab.Modules.Catalogo.Presentation.Produtos;
 using CommerceLab.Shared.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -14,8 +19,13 @@ public sealed class CatalogoModule : IModule
 
     public void AddModule(IServiceCollection services, IConfiguration configuration)
     {
-        // Dependências internas do módulo entram aqui:
-        // DbContext, repositórios, handlers de Application, options.
+        // Singleton: os dicionários em memória são o "banco" e precisam sobreviver às requisições.
+        services.AddSingleton<IProdutoRepository, ProdutoRepositoryEmMemoria>();
+        services.AddSingleton<IEstoqueRepository, EstoqueRepositoryEmMemoria>();
+
+        services.AddScoped<CadastrarProdutoHandler>();
+        services.AddScoped<ObterProdutoPorIdHandler>();
+        services.AddScoped<ListarProdutosHandler>();
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
