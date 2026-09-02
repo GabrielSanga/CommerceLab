@@ -4,7 +4,7 @@ using CommerceLab.Shared.Results;
 
 namespace CommerceLab.Modules.Catalogo.Application.Produtos.CadastrarProduto;
 
-internal sealed class CadastrarProdutoHandler(IProdutoRepository produtos, IEstoqueRepository estoques)
+internal sealed class CadastrarProdutoHandler(IProdutoRepository produtos, IEstoqueRepository estoques, IUnitOfWork unitOfWork)
 {
     public async Task<Result<ProdutoCriadoResult>> HandleAsync(CadastrarProdutoCommand comando, CancellationToken cancellationToken)
     {
@@ -30,6 +30,8 @@ internal sealed class CadastrarProdutoHandler(IProdutoRepository produtos, IEsto
         }
 
         await estoques.AdicionarAsync(estoque, cancellationToken);
+
+        await unitOfWork.CommitAsync(cancellationToken);
 
         return Result<ProdutoCriadoResult>.Ok(new ProdutoCriadoResult(produto.Id, produto.Sku, produto.Nome, produto.Preco, produto.Ativo, produto.CriadoEm, estoque.QuantidadeDisponivel));
     }

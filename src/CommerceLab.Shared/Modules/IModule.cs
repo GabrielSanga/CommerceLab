@@ -6,15 +6,14 @@ namespace CommerceLab.Shared.Modules;
 
 /// <summary>
 /// Contrato que todo módulo do monolito precisa implementar para se plugar no Host.
-/// O Host não conhece o conteúdo do módulo: ele apenas chama estes dois métodos.
 /// </summary>
 public interface IModule
 {
-    /// <summary>Nome do módulo. Usado em log e diagnóstico.</summary>
+
     string Name { get; }
 
     /// <summary>
-    /// Registra no container tudo o que o módulo precisa (DbContext, handlers, repositórios, opções). Chamado uma única vez, na composição da aplicação.
+    /// Registra no container tudo o que o módulo precisa.
     /// </summary>
     void AddModule(IServiceCollection services, IConfiguration configuration);
 
