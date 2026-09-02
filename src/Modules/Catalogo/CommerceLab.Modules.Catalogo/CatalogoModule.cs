@@ -8,6 +8,7 @@ using CommerceLab.Shared.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,10 +20,27 @@ public sealed class CatalogoModule : IModule
 
     public void AddModule(IServiceCollection services, IConfiguration configuration)
     {
-        // Singleton: os dicionários em memória são o "banco" e precisam sobreviver às requisições.
-        services.AddSingleton<IProdutoRepository, ProdutoRepositoryEmMemoria>();
-        services.AddSingleton<IEstoqueRepository, EstoqueRepositoryEmMemoria>();
+        AddData(services, configuration);
+        AddHandlers(services);
+    }
 
+    private static void AddData(IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Catalogo");
+
+        services.AddDbContext<CatalogoDBContext>(options => options.UseNpgsql(
+            connectionString,
+            npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", CatalogoDBContext.SCHEMA)));
+
+        // Mesma instância do DbContext: repositório e commit precisam do mesmo ChangeTracker.
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<CatalogoDBContext>());
+
+        services.AddScoped<IProdutoRepository, ProdutoRepository>();
+        services.AddScoped<IEstoqueRepository, EstoqueRepository>();
+    }
+
+    private static void AddHandlers(IServiceCollection services)
+    {
         services.AddScoped<CadastrarProdutoHandler>();
         services.AddScoped<ObterProdutoPorIdHandler>();
         services.AddScoped<ListarProdutosHandler>();

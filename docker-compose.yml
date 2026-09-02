@@ -1,0 +1,25 @@
+services:
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: commercelab-postgres
+
+    environment:
+      POSTGRES_DB: commercelab
+      POSTGRES_USER: commercelab
+      POSTGRES_PASSWORD: commercelab
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U commercelab -d commercelab"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres-data:

@@ -5,9 +5,9 @@ namespace CommerceLab.Modules.Catalogo.Domain;
 
 internal sealed partial class Produto
 {
-    private const int NOMETAMANHOMINIMO = 3;
-    private const int NOMETAMANHOMAXIMO = 200;
-    private const int DESCRICAOTAMANHOMAXIMO = 2000;
+    internal const int NOMETAMANHOMINIMO = 3;
+    internal const int NOMETAMANHOMAXIMO = 200;
+    internal const int DESCRICAOTAMANHOMAXIMO = 2000;
 
     private Produto(Guid id, string nome, string? descricao, string sku, decimal preco, DateTime criadoEm)
     {

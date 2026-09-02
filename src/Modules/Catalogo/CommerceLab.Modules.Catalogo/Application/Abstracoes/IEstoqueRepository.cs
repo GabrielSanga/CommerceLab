@@ -8,9 +8,5 @@ internal interface IEstoqueRepository
 
     Task<Estoque?> ObterPorProdutoIdAsync(Guid produtoId, CancellationToken cancellationToken);
 
-    /// <summary>
-    /// Busca em lote, para a listagem não fazer uma consulta por produto.
-    /// </summary>
-    Task<IReadOnlyDictionary<Guid, Estoque>> ObterPorProdutosAsync(
-        IReadOnlyCollection<Guid> produtoIds, CancellationToken cancellationToken);
+    Task<IReadOnlyDictionary<Guid, Estoque>> ObterPorProdutosAsync(IReadOnlyCollection<Guid> produtoIds, CancellationToken cancellationToken);
 }

@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
+    <File Path="docker-compose.yml" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/CommerceLab.Host/CommerceLab.Host.csproj" Id="d1fbe248-20af-452e-99df-9e5a414e7f80" />
