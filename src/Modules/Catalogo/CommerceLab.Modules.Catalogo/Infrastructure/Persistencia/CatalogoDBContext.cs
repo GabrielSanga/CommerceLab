@@ -7,6 +7,9 @@ namespace CommerceLab.Modules.Catalogo.Infrastructure.Persistencia
 {
     internal sealed class CatalogoDBContext(DbContextOptions<CatalogoDBContext> options) : DbContext(options), IUnitOfWork
     {
+        /// <summary>Schema do módulo. O histórico de migrations mora aqui também, para o Catalogo evoluir o banco sem coordenar com outros módulos.</summary>
+        internal const string SCHEMA = "catalogo";
+
         public DbSet<Produto> Produtos => Set<Produto>();
 
         public DbSet<Estoque> Estoques => Set<Estoque>();
@@ -15,7 +18,7 @@ namespace CommerceLab.Modules.Catalogo.Infrastructure.Persistencia
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("catalogo");
+            modelBuilder.HasDefaultSchema(SCHEMA);
 
             modelBuilder.ApplyConfiguration(new ProdutoConfiguration());
             modelBuilder.ApplyConfiguration(new EstoqueConfiguration());

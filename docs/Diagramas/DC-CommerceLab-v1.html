@@ -18,13 +18,35 @@ mermaid.initialize({
 });
 const { svg } = await mermaid.render('cd3-svg', `classDiagram
 direction TB
+
+note "Opaco: implementado e persistido no schema catalogo. Esmaecido: modelo previsto, ainda sem código nem tabela. Só constam operações que existem no domínio."
+
+class Produto {
+  +UUID id
+  +string nome
+  +string descricao
+  +string sku
+  +decimal preco
+  +boolean ativo
+  +datetime criadoEm
+  +datetime atualizadoEm
+  +Criar(nome, descricao, sku, preco) Result~Produto~$
+}
+class Estoque {
+  +UUID id
+  +UUID produtoId
+  +int quantidadeDisponivel
+  +int quantidadeReservada
+  +datetime atualizadoEm
+  +Criar(produtoId, quantidadeInicial) Result~Estoque~$
+}
+
 class Cliente {
   +UUID id
   +string nome
   +string email
   +string documento
   +datetime criadoEm
-  +adicionarEndereco(Endereco)
 }
 class Endereco {
   +UUID id
@@ -40,41 +62,11 @@ class Pedido {
   +datetime dataCriacao
   +PedidoStatus status
   +decimal valorTotal
-  +adicionarItem(Produto, int, decimal)
-  +removerItem(UUID)
-  +calcularTotal()
-  +confirmar()
-  +marcarComoPago()
-  +cancelar()
 }
 class ItemPedido {
   +UUID id
   +int quantidade
   +decimal precoUnitario
-  +calcularSubtotal() decimal
-}
-class Produto {
-  +UUID id
-  +string nome
-  +string descricao
-  +string sku
-  +decimal preco
-  +boolean ativo
-  +datetime criadoEm
-  +datetime atualizadoEm
-  +alterarPreco(decimal)
-  +ativar()
-  +desativar()
-}
-class Estoque {
-  +UUID id
-  +int quantidadeDisponivel
-  +int quantidadeReservada
-  +datetime atualizadoEm
-  +adicionar(int)
-  +reservar(int)
-  +baixar(int)
-  +liberarReserva(int)
 }
 class PedidoStatus {
   <<enumeration>>
@@ -85,12 +77,20 @@ class PedidoStatus {
   ENTREGUE
   CANCELADO
 }
+
+Estoque "1" --> "1" Produto : produto_id, FK com índice único
+
 Cliente "1" --> "0..*" Endereco
 Cliente "1" --> "0..*" Pedido : realiza
 Pedido "1" *-- "1..*" ItemPedido
 Pedido "0..*" --> "1" Endereco : entrega
 ItemPedido "0..*" --> "1" Produto
-Produto "1" --> "1" Estoque
-Pedido ..> PedidoStatus`);
+Pedido ..> PedidoStatus
+
+cssClass "Cliente,Endereco,Pedido,ItemPedido,PedidoStatus" planejado
+`);
 document.getElementById('cd3').innerHTML = svg;
+const estilo = document.createElement('style');
+estilo.textContent = '#cd3 g.planejado { opacity: .45; } #cd3 g.planejado rect, #cd3 g.planejado path { stroke-dasharray: 5 4; }';
+document.getElementById('cd3').appendChild(estilo);
 </script>

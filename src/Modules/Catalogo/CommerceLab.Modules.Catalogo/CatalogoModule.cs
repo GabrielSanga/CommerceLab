@@ -28,7 +28,9 @@ public sealed class CatalogoModule : IModule
     {
         var connectionString = configuration.GetConnectionString("Catalogo");
 
-        services.AddDbContext<CatalogoDBContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<CatalogoDBContext>(options => options.UseNpgsql(
+            connectionString,
+            npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", CatalogoDBContext.SCHEMA)));
 
         // Mesma instância do DbContext: repositório e commit precisam do mesmo ChangeTracker.
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<CatalogoDBContext>());
