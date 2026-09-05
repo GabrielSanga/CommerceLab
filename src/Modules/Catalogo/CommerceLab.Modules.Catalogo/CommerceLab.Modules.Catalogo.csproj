@@ -11,6 +11,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
     <ProjectReference Include="..\CommerceLab.Modules.Catalogo.Contracts\CommerceLab.Modules.Catalogo.Contracts.csproj" />
+	  
+	<InternalsVisibleTo Include="CommerceLab.Modules.Catalogo.UnitTests" />
   </ItemGroup>
 
 </Project>
