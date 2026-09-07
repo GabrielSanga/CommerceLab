@@ -15,4 +15,7 @@
   </Folder>
   <Folder Name="/src/Modules/Cliente/" />
   <Folder Name="/src/Modules/Venda/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/CommerceLab.Modules.Catalogo.UnitTests/CommerceLab.Modules.Catalogo.UnitTests.csproj" Id="38b6a9e0-4e29-4dec-9411-3ab6f7624a86" />
+  </Folder>
 </Solution>
