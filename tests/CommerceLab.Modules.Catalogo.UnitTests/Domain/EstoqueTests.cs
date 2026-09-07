@@ -4,6 +4,17 @@ namespace CommerceLab.Modules.Catalogo.UnitTests.Domain;
 
 public class EstoqueTests
 {
+    [Fact]
+    public void Criar_DeveRetornarFalha_QuandoProdutoIdForVazio()
+    {
+        var resultado = Estoque.Criar(Guid.Empty, 10);
+
+        Assert.False(resultado.Sucesso);
+        Assert.Null(resultado.Valor);
+        Assert.NotNull(resultado.Erro);
+        Assert.Equal("ESTOQUE_PRODUTO_ID_INVALIDO", resultado.Erro.Codigo);
+    }
+
     [Theory]
     [InlineData(-1)]
     [InlineData(-10)]

@@ -25,6 +25,11 @@ internal sealed class Estoque
 
     public static Result<Estoque> Criar(Guid produtoId, int quantidadeInicial)
     {
+        if (produtoId == Guid.Empty)
+        {
+            return Result<Estoque>.Falha(Erro.Validacao("ESTOQUE_PRODUTO_ID_INVALIDO", "O identificador do produto deve ser válido."));
+        }
+
         if (quantidadeInicial < 0)
         {
             return Result<Estoque>.Falha(Erro.Validacao("ESTOQUE_QUANTIDADE_INVALIDA", "A quantidade inicial de estoque não pode ser negativa."));
