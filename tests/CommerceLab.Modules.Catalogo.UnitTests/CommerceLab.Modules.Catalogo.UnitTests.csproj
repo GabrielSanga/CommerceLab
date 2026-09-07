@@ -19,4 +19,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\Produto\" />
+  </ItemGroup>
+
 </Project>
