@@ -26,7 +26,7 @@ internal sealed class CadastrarProdutoHandler(IProdutoRepository produtos, IEsto
 
         if (!await produtos.TryAdicionarAsync(produto, cancellationToken))
         {
-            return Result<ProdutoCriadoResult>.Falha(Erro.Conflito("PRODUTO_SKU_DUPLICADO", $"Já existe um produto com o SKU '{produto.Sku}'."));
+            return Result<ProdutoCriadoResult>.Falha(Erro.Conflito("PRODUTO_SKU_DUPLICADO", $"Já existe um produto com o SKU '{produto.Sku}'!"));
         }
 
         await estoques.AdicionarAsync(estoque, cancellationToken);
