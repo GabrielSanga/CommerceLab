@@ -19,10 +19,10 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore CommerceLab.sln
+        run: dotnet restore CommerceLab.slnx
 
       - name: Build
-        run: dotnet build CommerceLab.sln --configuration Release --no-restore 
+        run: dotnet build CommerceLab.slnx --configuration Release --no-restore 
 
       - name: Run tests
-        run: dotnet test CommerceLab.sln --configuration Release --no-build          
+        run: dotnet test CommerceLab.slnx --configuration Release --no-build          
