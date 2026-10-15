@@ -1,9 +1,5 @@
 ﻿using CommerceLab.Modules.Cliente.Application.Abstracoes;
-using CommerceLab.Modules.Cliente.Domain;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CommerceLab.Modules.Cliente.Infrastructure.Persistencia
 {
@@ -18,9 +14,12 @@ namespace CommerceLab.Modules.Cliente.Infrastructure.Persistencia
 
             contexto.Clientes.Add(cliente);
 
-            await contexto.SaveChangesAsync(cancellationToken);
-
             return true;
+        }
+
+        public async Task<Domain.Cliente?> ObterPorIdAsync(Guid idCliente, CancellationToken cancellationToken)
+        {
+            return await contexto.Clientes.FirstOrDefaultAsync(cliente => cliente.Id == idCliente, cancellationToken);
         }
 
     }
