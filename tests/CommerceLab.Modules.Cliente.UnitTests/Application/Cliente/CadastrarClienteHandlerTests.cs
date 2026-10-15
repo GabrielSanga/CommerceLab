@@ -83,5 +83,8 @@ public class CadastrarClienteHandlerTests
             ClienteAdicionado = cliente;
             return Task.FromResult(resultadoAdicionar);
         }
+
+        public Task<ClienteDomain?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 }
