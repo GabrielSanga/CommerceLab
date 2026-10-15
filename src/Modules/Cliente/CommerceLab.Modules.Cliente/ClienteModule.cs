@@ -1,5 +1,6 @@
 ﻿using CommerceLab.Modules.Cliente.Application.Abstracoes;
 using CommerceLab.Modules.Cliente.Application.CadastrarCliente;
+using CommerceLab.Modules.Cliente.Application.CadastrarEnderecoCliente;
 using CommerceLab.Modules.Cliente.Infrastructure.Persistencia;
 using CommerceLab.Modules.Cliente.Presentation.Cliente;
 using CommerceLab.Shared.Modules;
@@ -30,12 +31,16 @@ namespace CommerceLab.Modules.Cliente
                 connectionString,
                 npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", ClienteDBContext.SCHEMA)));
 
+            // Mesma instância do DbContext: repositório e commit precisam do mesmo ChangeTracker.
+            services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ClienteDBContext>());
+
             services.AddScoped<IClienteRepository, ClienteRepository>();
         }
 
         private static void AddHandlers(IServiceCollection services)
         {
             services.AddScoped<CadastrarClienteHandler>();
+            services.AddScoped<CadastrarEnderecoClienteHandler>();
         }
 
         public void MapEndpoints(IEndpointRouteBuilder endpoints)

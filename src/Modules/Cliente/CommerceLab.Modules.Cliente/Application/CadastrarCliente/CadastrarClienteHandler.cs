@@ -3,7 +3,7 @@ using CommerceLab.Shared.Results;
 
 namespace CommerceLab.Modules.Cliente.Application.CadastrarCliente
 {
-    internal class CadastrarClienteHandler(IClienteRepository clienteRepository)
+    internal class CadastrarClienteHandler(IClienteRepository clienteRepository, IUnitOfWork unitOfWork)
     {
 
         public async Task<Result<ClienteCriadoResult>> HandleAsync(CadastrarClienteCommand comando, CancellationToken cancellationToken)
@@ -21,6 +21,8 @@ namespace CommerceLab.Modules.Cliente.Application.CadastrarCliente
             {
                 return Result<ClienteCriadoResult>.Falha(Erro.Conflito("EMAIL_JA_EXISTENTE", $"Já existe um cliente com o email '{cliente.Email}'!"));
             }
+
+            await unitOfWork.CommitAsync(cancellationToken);
 
             var clienteRetorno = new ClienteCriadoResult(cliente.Id, cliente.Nome, cliente.Email, cliente.Documento, cliente.CriadoEm);
 
