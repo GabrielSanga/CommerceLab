@@ -19,7 +19,7 @@ mermaid.initialize({
 const { svg } = await mermaid.render('cd3-svg', `classDiagram
 direction TB
 
-note "Opaco: implementado e persistido no schema catalogo. Esmaecido: modelo previsto, ainda sem código nem tabela. Só constam operações que existem no domínio."
+note "Opaco: implementado e persistido (schemas catalogo e cliente). Esmaecido: modelo previsto, ainda sem código nem tabela. Só constam operações que existem no domínio."
 
 class Produto {
   +UUID id
@@ -47,13 +47,15 @@ class Cliente {
   +string email
   +string documento
   +datetime criadoEm
+  +Criar(nome, email, documento) Result~Cliente~$
+  +AdicionarEndereco(logradouro, numero, cidade, estado, cep) Result~Endereco~
 }
 class Endereco {
   +UUID id
   +string logradouro
   +string numero
   +string cidade
-  +string uf
+  +string estado
   +string cep
 }
 class Pedido {
@@ -87,7 +89,7 @@ Pedido "0..*" --> "1" Endereco : entrega
 ItemPedido "0..*" --> "1" Produto
 Pedido ..> PedidoStatus
 
-cssClass "Cliente,Endereco,Pedido,ItemPedido,PedidoStatus" planejado
+cssClass "Pedido,ItemPedido,PedidoStatus" planejado
 `);
 document.getElementById('cd3').innerHTML = svg;
 const estilo = document.createElement('style');

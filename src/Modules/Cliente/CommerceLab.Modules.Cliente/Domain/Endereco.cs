@@ -4,7 +4,7 @@ namespace CommerceLab.Modules.Cliente.Domain;
 
 internal sealed class Endereco
 {
-    public Endereco(Guid id, Guid idCliente, string logradouro, string numero, string cidade, string estado, string cep)
+    private Endereco(Guid id, Guid idCliente, string logradouro, string numero, string cidade, string estado, string cep)
     {
         Id = id;
         IdCliente = idCliente;

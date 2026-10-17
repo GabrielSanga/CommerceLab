@@ -19,7 +19,9 @@ namespace CommerceLab.Modules.Cliente.Infrastructure.Persistencia
 
         public async Task<Domain.Cliente?> ObterPorIdAsync(Guid idCliente, CancellationToken cancellationToken)
         {
-            return await contexto.Clientes.FirstOrDefaultAsync(cliente => cliente.Id == idCliente, cancellationToken);
+            return await contexto.Clientes
+                .Include(cliente => cliente.Enderecos)
+                .FirstOrDefaultAsync(cliente => cliente.Id == idCliente, cancellationToken);
         }
 
     }
