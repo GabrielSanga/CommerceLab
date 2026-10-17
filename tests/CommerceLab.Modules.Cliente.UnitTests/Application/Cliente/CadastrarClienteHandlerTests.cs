@@ -18,7 +18,8 @@ public class CadastrarClienteHandlerTests
     public async Task HandleAsync_DeveRetornarFalhaSemPersistir_QuandoClienteForInvalido(string? nome, string? email, string? documento, string codigoEsperado)
     {
         var clientes = new ClienteRepositorySpy();
-        var handler = new CadastrarClienteHandler(clientes);
+        var unitOfWork = new UnitOfWorkSpy();
+        var handler = new CadastrarClienteHandler(clientes, unitOfWork);
         var comando = new CadastrarClienteCommand(nome, email, documento);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
@@ -28,13 +29,15 @@ public class CadastrarClienteHandlerTests
         Assert.NotNull(resultado.Erro);
         Assert.Equal(codigoEsperado, resultado.Erro.Codigo);
         Assert.Equal(0, clientes.QuantidadeTentativasAdicionar);
+        Assert.Equal(0, unitOfWork.QuantidadeCommits);
     }
 
     [Fact]
     public async Task HandleAsync_DeveRetornarConflitoSemPersistir_QuandoEmailJaExistir()
     {
         var clientes = new ClienteRepositorySpy(resultadoAdicionar: false);
-        var handler = new CadastrarClienteHandler(clientes);
+        var unitOfWork = new UnitOfWorkSpy();
+        var handler = new CadastrarClienteHandler(clientes, unitOfWork);
         var comando = new CadastrarClienteCommand("João Silva", "cliente@email.com", "12345678900");
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
@@ -45,13 +48,15 @@ public class CadastrarClienteHandlerTests
         Assert.Equal("EMAIL_JA_EXISTENTE", resultado.Erro.Codigo);
         Assert.Equal(TipoErro.Conflito, resultado.Erro.Tipo);
         Assert.Equal(1, clientes.QuantidadeTentativasAdicionar);
+        Assert.Equal(0, unitOfWork.QuantidadeCommits);
     }
 
     [Fact]
     public async Task HandleAsync_DevePersistirCliente_QuandoComandoForValido()
     {
         var clientes = new ClienteRepositorySpy();
-        var handler = new CadastrarClienteHandler(clientes);
+        var unitOfWork = new UnitOfWorkSpy();
+        var handler = new CadastrarClienteHandler(clientes, unitOfWork);
         var comando = new CadastrarClienteCommand("João Silva", "cliente@email.com", "12345678900");
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
@@ -60,6 +65,7 @@ public class CadastrarClienteHandlerTests
         Assert.Null(resultado.Erro);
         Assert.NotNull(resultado.Valor);
         Assert.Equal(1, clientes.QuantidadeTentativasAdicionar);
+        Assert.Equal(1, unitOfWork.QuantidadeCommits);
 
         var clienteAdicionado = Assert.IsType<ClienteDomain>(clientes.ClienteAdicionado);
 
@@ -69,6 +75,17 @@ public class CadastrarClienteHandlerTests
         Assert.Equal(clienteAdicionado.Email, resultado.Valor.Email);
         Assert.Equal(clienteAdicionado.Documento, resultado.Valor.Documento);
         Assert.Equal(clienteAdicionado.CriadoEm, resultado.Valor.CriadoEm);
+    }
+
+    private sealed class UnitOfWorkSpy : IUnitOfWork
+    {
+        public int QuantidadeCommits { get; private set; }
+
+        public Task CommitAsync(CancellationToken cancellationToken)
+        {
+            QuantidadeCommits++;
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class ClienteRepositorySpy(bool resultadoAdicionar = true) : IClienteRepository
@@ -83,5 +100,8 @@ public class CadastrarClienteHandlerTests
             ClienteAdicionado = cliente;
             return Task.FromResult(resultadoAdicionar);
         }
+
+        public Task<ClienteDomain?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 }

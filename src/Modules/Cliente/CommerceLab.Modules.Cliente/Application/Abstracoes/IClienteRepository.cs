@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CommerceLab.Modules.Cliente.Domain;
 
 namespace CommerceLab.Modules.Cliente.Application.Abstracoes
 {
@@ -8,6 +6,8 @@ namespace CommerceLab.Modules.Cliente.Application.Abstracoes
     {
 
         Task<bool> TryAdicionarAsync(Domain.Cliente cliente, CancellationToken cancellationToken);
+
+        Task<Domain.Cliente?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken);
 
     }
 }

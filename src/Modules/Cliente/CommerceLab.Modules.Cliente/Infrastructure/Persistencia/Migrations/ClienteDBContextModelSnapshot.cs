@@ -58,6 +58,70 @@ namespace CommerceLab.Modules.Cliente.Infrastructure.Persistencia.Migrations
 
                     b.ToTable("clientes", "cliente");
                 });
+
+            modelBuilder.Entity("CommerceLab.Modules.Cliente.Domain.Endereco", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Cep")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("cep");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("cidade");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("criado_em");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("estado");
+
+                    b.Property<Guid>("IdCliente")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cliente_id");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("logradouro");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("numero");
+
+                    b.HasKey("Id")
+                        .HasName("pk_enderecos");
+
+                    b.HasIndex("IdCliente")
+                        .HasDatabaseName("ix_enderecos_cliente_id");
+
+                    b.ToTable("enderecos", "cliente");
+                });
+
+            modelBuilder.Entity("CommerceLab.Modules.Cliente.Domain.Endereco", b =>
+                {
+                    b.HasOne("CommerceLab.Modules.Cliente.Domain.Cliente", null)
+                        .WithMany("Enderecos")
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_clientes_enderecos");
+                });
+
+            modelBuilder.Entity("CommerceLab.Modules.Cliente.Domain.Cliente", b =>
+                {
+                    b.Navigation("Enderecos");
+                });
 #pragma warning restore 612, 618
         }
     }

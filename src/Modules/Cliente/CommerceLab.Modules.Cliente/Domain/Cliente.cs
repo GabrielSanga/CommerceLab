@@ -4,6 +4,7 @@ namespace CommerceLab.Modules.Cliente.Domain;
 
 internal sealed class Cliente
 {
+    private List<Endereco> _enderecos = [];
 
     public Cliente(Guid id, string nome, string email, string documento, DateTime criadoEm)
     {
@@ -23,6 +24,8 @@ internal sealed class Cliente
     public string Documento { get; }
 
     public DateTime CriadoEm { get; }
+
+    public IReadOnlyCollection<Endereco> Enderecos => _enderecos;
 
     public static Result<Cliente> Criar(string? nome, string? email, string? documento)
     {
@@ -44,6 +47,19 @@ internal sealed class Cliente
         var cliente = new Cliente(Guid.NewGuid(), nome, email, documento, DateTime.UtcNow);
 
         return Result<Cliente>.Ok(cliente);
+    }
+
+    public Result<Endereco> AdicionarEndereco(string? logradouro, string? numero, string? cidade, string? estado, string? cep)
+    {
+        var enderecoCriado = Endereco.Criar(Id, logradouro, numero, cidade, estado, cep);
+        if (!enderecoCriado.Sucesso)
+        {
+            return enderecoCriado;
+        }
+
+        _enderecos.Add(enderecoCriado.Valor!);
+
+        return enderecoCriado;
     }
 }
 
