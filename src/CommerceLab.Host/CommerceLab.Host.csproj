@@ -13,6 +13,7 @@
     <ProjectReference Include="..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
     <ProjectReference Include="..\Modules\Catalogo\CommerceLab.Modules.Catalogo\CommerceLab.Modules.Catalogo.csproj" />
     <ProjectReference Include="..\Modules\Cliente\CommerceLab.Modules.Cliente\CommerceLab.Modules.Cliente.csproj" />
+    <ProjectReference Include="..\Modules\Venda\CommerceLab.Modules.Venda\CommerceLab.Modules.Venda.csproj" />
   </ItemGroup>
 
 </Project>
