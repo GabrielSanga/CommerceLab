@@ -6,7 +6,7 @@ internal sealed class Cliente
 {
     private List<Endereco> _enderecos = [];
 
-    public Cliente(Guid id, string nome, string email, string documento, DateTime criadoEm)
+    private Cliente(Guid id, string nome, string email, string documento, DateTime criadoEm)
     {
         Id = id;
         Nome = nome;
