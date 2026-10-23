@@ -2,6 +2,8 @@ using CommerceLab.Modules.Catalogo.Application.Abstracoes;
 using CommerceLab.Modules.Catalogo.Application.Produtos.CadastrarProduto;
 using CommerceLab.Modules.Catalogo.Application.Produtos.ListarProdutos;
 using CommerceLab.Modules.Catalogo.Application.Produtos.ObterProdutoPorId;
+using CommerceLab.Modules.Catalogo.Contracts.Produtos;
+using CommerceLab.Modules.Catalogo.Infrastructure.Integracao;
 using CommerceLab.Modules.Catalogo.Infrastructure.Persistencia;
 using CommerceLab.Modules.Catalogo.Presentation.Produtos;
 using CommerceLab.Shared.Modules;
@@ -22,6 +24,7 @@ public sealed class CatalogoModule : IModule
     {
         AddData(services, configuration);
         AddHandlers(services);
+        AddIntegrations(services);
     }
 
     private static void AddData(IServiceCollection services, IConfiguration configuration)
@@ -44,6 +47,11 @@ public sealed class CatalogoModule : IModule
         services.AddScoped<CadastrarProdutoHandler>();
         services.AddScoped<ObterProdutoPorIdHandler>();
         services.AddScoped<ListarProdutosHandler>();
+    }
+
+    private static void AddIntegrations(IServiceCollection services)
+    {   
+        services.AddScoped<IProdutoSnapshotService, ProdutoSnapshotService>();
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
