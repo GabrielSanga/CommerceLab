@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CommerceLab.Modules.Venda.Application.CadastrarPedido;
+using CommerceLab.Shared.Results;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -8,16 +10,19 @@ internal static class PedidoEndpoint
 {
     public static void Map(IEndpointRouteBuilder pedidos)
     {
-        pedidos.MapPost("/", Cadastrar)
-            .WithName("CadastrarPedido")
-            .WithSummary("Cadastra um novo pedido")
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status409Conflict);
+        pedidos.MapPost("/", Cadastrar).WithName("CadastrarPedido");
     }
 
-    private static async Task<IResult> Cadastrar()
+    private static async Task<IResult> Cadastrar(CadastrarPedidoRequest request, CadastrarPedidoHandler handler, CancellationToken cancellationToken)
     {
-        return Results.Created("", null);
+        var resultado = await handler.HandleAsync(request.ParaCommand(), cancellationToken);
+
+        if (!resultado.Sucesso)
+            return resultado.Erro!.ParaHttp();
+
+        var pedido = resultado.Valor!;
+
+        return Results.Created($"/api/venda/pedidos/{pedido.Id}", pedido);
     }
 
 }

@@ -1,10 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Application\" />
-    <Folder Include="Domain\" />
-    <Folder Include="Infrastructure\" />
+    <ProjectReference Include="..\..\..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
+    <ProjectReference Include="..\..\Catalogo\CommerceLab.Modules.Catalogo.Contracts\CommerceLab.Modules.Catalogo.Contracts.csproj" />
+
+    <InternalsVisibleTo Include="CommerceLab.Modules.Venda.UnitTests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\Persistencia\Migrations\" />
   </ItemGroup>
 </Project>
