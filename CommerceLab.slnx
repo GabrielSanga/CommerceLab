@@ -17,9 +17,13 @@
     <Project Path="src/Modules/Cliente/CommerceLab.Modules.Cliente.Contracts/CommerceLab.Modules.Cliente.Contracts.csproj" Id="6f8a6a68-48dc-4acf-91da-b27dc135838c" />
     <Project Path="src/Modules/Cliente/CommerceLab.Modules.Cliente/CommerceLab.Modules.Cliente.csproj" Id="69460f8f-8be9-4d3f-b232-2965b37d183d" />
   </Folder>
-  <Folder Name="/src/Modules/Venda/" />
+  <Folder Name="/src/Modules/Venda/">
+    <Project Path="src/Modules/Venda/CommerceLab.Modules.Venda.Contracts/CommerceLab.Modules.Venda.Contracts.csproj" Id="a47a6093-6324-4e98-93fc-6169dc1f238f" />
+    <Project Path="src/Modules/Venda/CommerceLab.Modules.Venda/CommerceLab.Modules.Venda.csproj" Id="c1267453-a427-403d-844d-bf56141cabd7" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CommerceLab.Modules.Catalogo.UnitTests/CommerceLab.Modules.Catalogo.UnitTests.csproj" Id="38b6a9e0-4e29-4dec-9411-3ab6f7624a86" />
     <Project Path="tests/CommerceLab.Modules.Cliente.UnitTests/CommerceLab.Modules.Cliente.UnitTests.csproj" Id="22223751-2791-4cea-8aab-c85de2fba323" />
+    <Project Path="tests/CommerceLab.Modules.Venda.UnitTests/CommerceLab.Modules.Venda.UnitTests.csproj" Id="7f3c2a1e-9b4d-4e8a-a5c1-2d6f8e0b1a34" />
   </Folder>
 </Solution>
