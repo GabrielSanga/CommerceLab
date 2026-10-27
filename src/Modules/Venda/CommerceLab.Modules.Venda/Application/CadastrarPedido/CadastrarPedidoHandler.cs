@@ -1,4 +1,5 @@
-﻿using CommerceLab.Modules.Catalogo.Contracts.Produtos;
+﻿using CommerceLab.Modules.Catalogo.Contracts.Estoques;
+using CommerceLab.Modules.Catalogo.Contracts.Produtos;
 using CommerceLab.Modules.Venda.Application.Abstracoes;
 using CommerceLab.Modules.Venda.Domain;
 using CommerceLab.Shared.Results;
@@ -8,6 +9,7 @@ namespace CommerceLab.Modules.Venda.Application.CadastrarPedido;
 internal sealed class CadastrarPedidoHandler(
     IPedidoRepository pedidoRepository,
     IProdutoSnapshotService produtoSnapshots,
+    IEstoqueService estoqueService,
     IUnitOfWork unitOfWork)
 {
 
@@ -44,6 +46,13 @@ internal sealed class CadastrarPedidoHandler(
             {
                 return Result<PedidoCriadoResult>.Falha(itemAdicionado.Erro!);
             }
+        }
+
+        var itensBaixa = comando.Itens.Select(item => new ItemBaixaEstoque(item.IdProduto, item.Quantidade)).ToArray();
+        var baixa = await estoqueService.BaixarAsync(itensBaixa, cancellationToken);
+        if (!baixa.Sucesso)
+        {
+            return Result<PedidoCriadoResult>.Falha(baixa.Erro!);
         }
 
         await pedidoRepository.AdicionarAsync(pedido, cancellationToken);

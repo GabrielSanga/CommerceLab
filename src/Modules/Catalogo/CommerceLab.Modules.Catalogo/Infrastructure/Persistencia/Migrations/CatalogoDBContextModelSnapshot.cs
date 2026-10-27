@@ -46,6 +46,12 @@ namespace CommerceLab.Modules.Catalogo.Infrastructure.Persistencia.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("quantidade_reservada");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id")
                         .HasName("pk_estoques");
 

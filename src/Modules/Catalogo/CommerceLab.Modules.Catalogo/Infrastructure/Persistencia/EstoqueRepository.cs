@@ -24,5 +24,15 @@ namespace CommerceLab.Modules.Catalogo.Infrastructure.Persistencia
 
             return await contexto.Estoques.AsNoTracking().Where(estoque => produtoIds.Contains(estoque.ProdutoId)).ToDictionaryAsync(estoque => estoque.ProdutoId, cancellationToken);
         }
+
+        public async Task<IReadOnlyDictionary<Guid, Estoque>> ObterPorProdutosParaAtualizacaoAsync(IReadOnlyCollection<Guid> produtoIds, CancellationToken cancellationToken)
+        {
+            if (produtoIds.Count == 0)
+            {
+                return new Dictionary<Guid, Estoque>();
+            }
+
+            return await contexto.Estoques.Where(estoque => produtoIds.Contains(estoque.ProdutoId)).ToDictionaryAsync(estoque => estoque.ProdutoId, cancellationToken);
+        }
     }
 }

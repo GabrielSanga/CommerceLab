@@ -9,4 +9,6 @@ internal interface IEstoqueRepository
     Task<Estoque?> ObterPorProdutoIdAsync(Guid produtoId, CancellationToken cancellationToken);
 
     Task<IReadOnlyDictionary<Guid, Estoque>> ObterPorProdutosAsync(IReadOnlyCollection<Guid> produtoIds, CancellationToken cancellationToken);
+
+    Task<IReadOnlyDictionary<Guid, Estoque>> ObterPorProdutosParaAtualizacaoAsync(IReadOnlyCollection<Guid> produtoIds, CancellationToken cancellationToken);
 }
