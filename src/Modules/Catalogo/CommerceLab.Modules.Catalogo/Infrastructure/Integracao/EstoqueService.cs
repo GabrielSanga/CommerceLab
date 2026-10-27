@@ -1,6 +1,7 @@
 using CommerceLab.Modules.Catalogo.Application.Abstracoes;
 using CommerceLab.Modules.Catalogo.Contracts.Estoques;
 using CommerceLab.Shared.Results;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommerceLab.Modules.Catalogo.Infrastructure.Integracao;
 
@@ -30,7 +31,14 @@ internal sealed class EstoqueService(IEstoqueRepository estoques, IUnitOfWork un
             }
         }
 
-        await unitOfWork.CommitAsync(cancellationToken);
+        try
+        {
+            await unitOfWork.CommitAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Falha(Erro.Conflito("ESTOQUE_CONCORRENCIA", "O estoque foi alterado por outra operação concorrente. Tente novamente."));
+        }
 
         return Result.Ok();
     }

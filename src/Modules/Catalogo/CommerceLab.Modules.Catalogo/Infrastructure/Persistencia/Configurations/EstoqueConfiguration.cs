@@ -20,6 +20,11 @@ namespace CommerceLab.Modules.Catalogo.Infrastructure.Persistencia.Configuration
 
             builder.HasIndex(estoque => estoque.ProdutoId).IsUnique().HasDatabaseName("ix_estoques_produto_id");
 
+            builder.Property<uint>("xmin")
+                   .HasColumnType("xid")
+                   .ValueGeneratedOnAddOrUpdate()
+                   .IsConcurrencyToken();
+
             builder.HasOne<Produto>()                       // sem navegação do lado Estoque
                    .WithOne()                               // sem navegação do lado Produto
                    .HasForeignKey<Estoque>(estoque => estoque.ProdutoId)
