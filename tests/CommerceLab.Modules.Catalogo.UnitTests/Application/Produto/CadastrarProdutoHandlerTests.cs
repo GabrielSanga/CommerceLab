@@ -117,6 +117,9 @@ public class CadastrarProdutoHandlerTests
             IReadOnlyCollection<Guid> produtoIds,
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
+
+        public Task<IReadOnlyDictionary<Guid, Estoque>> ObterPorProdutosParaAtualizacaoAsync(IReadOnlyCollection<Guid> produtoIds, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 
     private sealed class UnitOfWorkSpy : IUnitOfWork
