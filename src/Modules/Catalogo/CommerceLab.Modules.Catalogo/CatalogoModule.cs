@@ -2,6 +2,7 @@ using CommerceLab.Modules.Catalogo.Application.Abstracoes;
 using CommerceLab.Modules.Catalogo.Application.Produtos.CadastrarProduto;
 using CommerceLab.Modules.Catalogo.Application.Produtos.ListarProdutos;
 using CommerceLab.Modules.Catalogo.Application.Produtos.ObterProdutoPorId;
+using CommerceLab.Modules.Catalogo.Contracts.Estoques;
 using CommerceLab.Modules.Catalogo.Contracts.Produtos;
 using CommerceLab.Modules.Catalogo.Infrastructure.Integracao;
 using CommerceLab.Modules.Catalogo.Infrastructure.Persistencia;
@@ -50,8 +51,9 @@ public sealed class CatalogoModule : IModule
     }
 
     private static void AddIntegrations(IServiceCollection services)
-    {   
+    {
         services.AddScoped<IProdutoSnapshotService, ProdutoSnapshotService>();
+        services.AddScoped<IEstoqueService, EstoqueService>();
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)

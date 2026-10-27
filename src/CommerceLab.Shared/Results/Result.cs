@@ -19,3 +19,20 @@ public readonly struct Result<T>
 
     public static Result<T> Falha(Erro erro) => new(false, default, erro);
 }
+
+public readonly struct Result
+{
+    private Result(bool sucesso, Erro? erro)
+    {
+        Sucesso = sucesso;
+        Erro = erro;
+    }
+
+    public bool Sucesso { get; }
+
+    public Erro? Erro { get; }
+
+    public static Result Ok() => new(true, null);
+
+    public static Result Falha(Erro erro) => new(false, erro);
+}
