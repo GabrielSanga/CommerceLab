@@ -57,4 +57,17 @@ internal sealed class Estoque
 
         return Result.Ok();
     }
+
+    public Result Creditar(int quantidade)
+    {
+        if (quantidade <= 0)
+        {
+            return Result.Falha(Erro.Validacao("ESTOQUE_CREDITO_INVALIDO", "A quantidade a estornar deve ser maior que zero."));
+        }
+
+        QuantidadeDisponivel += quantidade;
+        AtualizadoEm = DateTime.UtcNow;
+
+        return Result.Ok();
+    }
 }

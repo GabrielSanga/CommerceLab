@@ -10,4 +10,7 @@ public sealed record Erro(string Codigo, string Mensagem, TipoErro Tipo)
 
     public static Erro Conflito(string codigo, string mensagem) =>
         new(codigo, mensagem, TipoErro.Conflito);
+
+    public static Erro Falha(string codigo, string mensagem) =>
+        new(codigo, mensagem, TipoErro.Falha);
 }
