@@ -1,16 +1,13 @@
 ﻿using CommerceLab.Modules.Catalogo.Contracts.Estoques;
 using CommerceLab.Modules.Catalogo.Contracts.Produtos;
-using CommerceLab.Modules.Venda.Application.Abstracoes;
+using CommerceLab.Modules.Venda.Application.CadastrarPedido.Saga;
 using CommerceLab.Modules.Venda.Domain;
 using CommerceLab.Shared.Results;
+using CommerceLab.Shared.Sagas;
 
 namespace CommerceLab.Modules.Venda.Application.CadastrarPedido;
 
-internal sealed class CadastrarPedidoHandler(
-    IPedidoRepository pedidoRepository,
-    IProdutoSnapshotService produtoSnapshots,
-    IEstoqueService estoqueService,
-    IUnitOfWork unitOfWork)
+internal sealed class CadastrarPedidoHandler(IProdutoSnapshotService produtoSnapshots, SagaOrchestrator<CadastrarPedidoContexto> orquestrador)
 {
 
     public async Task<Result<PedidoCriadoResult>> HandleAsync(CadastrarPedidoCommand comando, CancellationToken cancellationToken)
@@ -49,15 +46,13 @@ internal sealed class CadastrarPedidoHandler(
         }
 
         var itensBaixa = comando.Itens.Select(item => new ItemBaixaEstoque(item.IdProduto, item.Quantidade)).ToArray();
-        var baixa = await estoqueService.BaixarAsync(itensBaixa, cancellationToken);
-        if (!baixa.Sucesso)
+        var contexto = new CadastrarPedidoContexto(pedido, itensBaixa);
+
+        var saga = await orquestrador.ExecutarAsync(contexto, cancellationToken);
+        if (!saga.Sucesso)
         {
-            return Result<PedidoCriadoResult>.Falha(baixa.Erro!);
+            return Result<PedidoCriadoResult>.Falha(saga.Erro!);
         }
-
-        await pedidoRepository.AdicionarAsync(pedido, cancellationToken);
-
-        await unitOfWork.CommitAsync(cancellationToken);
 
         return Result<PedidoCriadoResult>.Ok(new PedidoCriadoResult(pedido.Id, pedido.Codigo, pedido.ValorTotal, pedido.Itens.Count, pedido.DataCriacao));
     }

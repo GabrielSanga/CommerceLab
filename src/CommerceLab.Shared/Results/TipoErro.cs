@@ -10,4 +10,7 @@ public enum TipoErro
 
     /// <summary>Estado atual impede a operação (ex.: identificador já usado).</summary>
     Conflito,
+
+    /// <summary>Falha inesperada de execução (ex.: exceção de infraestrutura).</summary>
+    Falha,
 }

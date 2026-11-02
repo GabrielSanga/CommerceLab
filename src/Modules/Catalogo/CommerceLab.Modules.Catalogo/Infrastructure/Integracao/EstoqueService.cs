@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CommerceLab.Modules.Catalogo.Infrastructure.Integracao;
 
 internal sealed class EstoqueService(IEstoqueRepository estoques, IUnitOfWork unitOfWork) : IEstoqueService
-{
+{   
     public async Task<Result> BaixarAsync(IReadOnlyCollection<ItemBaixaEstoque> itens, CancellationToken cancellationToken)
     {
         if (itens is null || itens.Count == 0)
@@ -28,6 +28,42 @@ internal sealed class EstoqueService(IEstoqueRepository estoques, IUnitOfWork un
             if (!debito.Sucesso)
             {
                 return Result.Falha(debito.Erro!);
+            }
+        }
+
+        try
+        {
+            await unitOfWork.CommitAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Falha(Erro.Conflito("ESTOQUE_CONCORRENCIA", "O estoque foi alterado por outra operação concorrente. Tente novamente."));
+        }
+
+        return Result.Ok();
+    }
+
+    public async Task<Result> EstornarAsync(IReadOnlyCollection<ItemEstornoEstoque> itens, CancellationToken cancellationToken)
+    {
+        if (itens is null || itens.Count == 0)
+        {
+            return Result.Falha(Erro.Validacao("ESTORNO_ESTOQUE_ITENS_VAZIOS", "A lista de itens para estorno não pode ser vazia."));
+        }
+
+        var idsProdutos = itens.Select(item => item.IdProduto).Distinct().ToArray();
+        var estoquesPorProduto = await estoques.ObterPorProdutosParaAtualizacaoAsync(idsProdutos, cancellationToken);
+
+        foreach (var item in itens)
+        {
+            if (!estoquesPorProduto.TryGetValue(item.IdProduto, out var estoque))
+            {
+                return Result.Falha(Erro.NaoEncontrado("ESTOQUE_NAO_ENCONTRADO", $"Não existe estoque para o produto '{item.IdProduto}'."));
+            }
+
+            var credito = estoque.Creditar(item.Quantidade);
+            if (!credito.Sucesso)
+            {
+                return Result.Falha(credito.Erro!);
             }
         }
 

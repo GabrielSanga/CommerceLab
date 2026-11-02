@@ -1,8 +1,10 @@
 ﻿using CommerceLab.Modules.Venda.Application.Abstracoes;
 using CommerceLab.Modules.Venda.Application.CadastrarPedido;
+using CommerceLab.Modules.Venda.Application.CadastrarPedido.Saga;
 using CommerceLab.Modules.Venda.Infrastructure.Persistencia;
 using CommerceLab.Modules.Venda.Presentation.Pedido;
 using CommerceLab.Shared.Modules;
+using CommerceLab.Shared.Sagas;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -20,6 +22,7 @@ public class VendaModule : IModule
     {
         AddData(services, configuration);
         AddHandlers(services);
+        AddSagas(services);
     }
 
     private static void AddData(IServiceCollection services, IConfiguration configuration)
@@ -39,6 +42,14 @@ public class VendaModule : IModule
     private static void AddHandlers(IServiceCollection services)
     {
         services.AddScoped<CadastrarPedidoHandler>();
+    }
+
+    private static void AddSagas(IServiceCollection services)
+    {
+        services.AddScoped<BaixarEstoqueStep>();
+        services.AddScoped<PersistirPedidoStep>();
+
+        services.AddScoped(sp => new SagaOrchestrator<CadastrarPedidoContexto>([sp.GetRequiredService<BaixarEstoqueStep>(), sp.GetRequiredService<PersistirPedidoStep>()]));
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
