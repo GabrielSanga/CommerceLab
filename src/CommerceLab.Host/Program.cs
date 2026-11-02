@@ -26,3 +26,5 @@ app.UseHttpsRedirection();
 app.MapModules();
 
 app.Run();
+
+public partial class Program;

@@ -1,18 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
-    <ProjectReference Include="..\CommerceLab.Modules.Catalogo.Contracts\CommerceLab.Modules.Catalogo.Contracts.csproj" />
-	  
-	<InternalsVisibleTo Include="CommerceLab.Modules.Catalogo.UnitTests" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
+		<ProjectReference Include="..\CommerceLab.Modules.Catalogo.Contracts\CommerceLab.Modules.Catalogo.Contracts.csproj" />
+
+		<InternalsVisibleTo Include="CommerceLab.Modules.Catalogo.UnitTests" />
+		<InternalsVisibleTo Include="CommerceLab.IntegrationTests" />
+	</ItemGroup>
 
 </Project>
