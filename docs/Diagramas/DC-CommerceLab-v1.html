@@ -19,7 +19,7 @@ mermaid.initialize({
 const { svg } = await mermaid.render('cd3-svg', `classDiagram
 direction TB
 
-note "Opaco: implementado e persistido (schemas catalogo e cliente). Esmaecido: modelo previsto, ainda sem código nem tabela. Só constam operações que existem no domínio."
+note "Todas as entidades estão implementadas e persistidas (schemas catalogo, cliente e venda). Só constam operações que existem no domínio."
 
 class Produto {
   +UUID id
@@ -60,15 +60,25 @@ class Endereco {
 }
 class Pedido {
   +UUID id
-  +string numero
-  +datetime dataCriacao
+  +string codigo
+  +UUID idCliente
+  +UUID idEndereco
   +PedidoStatus status
   +decimal valorTotal
+  +datetime dataCriacao
+  +Criar(idCliente, idEndereco) Result~Pedido~$
+  +AdicionarItem(idProduto, nomeProduto, sku, quantidade, valorUnitario) Result~PedidoItem~
 }
-class ItemPedido {
+class PedidoItem {
   +UUID id
+  +UUID idPedido
+  +UUID idProduto
+  +string nomeProduto
+  +string sku
   +int quantidade
-  +decimal precoUnitario
+  +decimal valorUnitario
+  +decimal subtotal
+  +Criar(idPedido, idProduto, nomeProduto, sku, quantidade, valorUnitario) Result~PedidoItem~$
 }
 class PedidoStatus {
   <<enumeration>>
@@ -84,15 +94,10 @@ Estoque "1" --> "1" Produto : produto_id, FK com índice único
 
 Cliente "1" --> "0..*" Endereco
 Cliente "1" --> "0..*" Pedido : realiza
-Pedido "1" *-- "1..*" ItemPedido
+Pedido "1" *-- "1..*" PedidoItem
 Pedido "0..*" --> "1" Endereco : entrega
-ItemPedido "0..*" --> "1" Produto
+PedidoItem "0..*" --> "1" Produto
 Pedido ..> PedidoStatus
-
-cssClass "Pedido,ItemPedido,PedidoStatus" planejado
 `);
 document.getElementById('cd3').innerHTML = svg;
-const estilo = document.createElement('style');
-estilo.textContent = '#cd3 g.planejado { opacity: .45; } #cd3 g.planejado rect, #cd3 g.planejado path { stroke-dasharray: 5 4; }';
-document.getElementById('cd3').appendChild(estilo);
 </script>
