@@ -1,5 +1,6 @@
 ﻿using CommerceLab.Modules.Catalogo.Contracts.Estoques;
 using CommerceLab.Modules.Catalogo.Contracts.Produtos;
+using CommerceLab.Modules.Cliente.Contracts.Clientes;
 using CommerceLab.Modules.Venda.Application.CadastrarPedido.Saga;
 using CommerceLab.Modules.Venda.Domain;
 using CommerceLab.Shared.Results;
@@ -7,7 +8,7 @@ using CommerceLab.Shared.Sagas;
 
 namespace CommerceLab.Modules.Venda.Application.CadastrarPedido;
 
-internal sealed class CadastrarPedidoHandler(IProdutoSnapshotService produtoSnapshots, SagaOrchestrator<CadastrarPedidoContexto> orquestrador)
+internal sealed class CadastrarPedidoHandler(IClienteSnapshotService clienteSnapshots, IProdutoSnapshotService produtoSnapshots, SagaOrchestrator<CadastrarPedidoContexto> orquestrador)
 {
 
     public async Task<Result<PedidoCriadoResult>> HandleAsync(CadastrarPedidoCommand comando, CancellationToken cancellationToken)
@@ -24,6 +25,18 @@ internal sealed class CadastrarPedidoHandler(IProdutoSnapshotService produtoSnap
         }
 
         var pedido = pedidoCriado.Valor!;
+
+        // O pedido guarda o cliente e o endereço por identificador; quem responde se eles existem é o módulo Cliente.
+        var cliente = await clienteSnapshots.ObterPorIdAsync(comando.IdCliente, cancellationToken);
+        if (cliente is null)
+        {
+            return Result<PedidoCriadoResult>.Falha(Erro.NaoEncontrado("CLIENTE_NAO_ENCONTRADO", $"Não existe cliente com o identificador '{comando.IdCliente}'."));
+        }
+
+        if (!cliente.IdsEnderecos.Contains(comando.IdEndereco))
+        {
+            return Result<PedidoCriadoResult>.Falha(Erro.NaoEncontrado("ENDERECO_NAO_ENCONTRADO", $"O cliente '{comando.IdCliente}' não tem o endereço '{comando.IdEndereco}'."));
+        }
 
         foreach (var itemComando in comando.Itens)
         {
