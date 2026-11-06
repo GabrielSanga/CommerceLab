@@ -7,6 +7,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\CommerceLab.Shared\CommerceLab.Shared.csproj" />
 		<ProjectReference Include="..\..\Catalogo\CommerceLab.Modules.Catalogo.Contracts\CommerceLab.Modules.Catalogo.Contracts.csproj" />
+		<ProjectReference Include="..\..\Cliente\CommerceLab.Modules.Cliente.Contracts\CommerceLab.Modules.Cliente.Contracts.csproj" />
 
 		<InternalsVisibleTo Include="CommerceLab.Modules.Venda.UnitTests" />
 		<InternalsVisibleTo Include="CommerceLab.IntegrationTests" />

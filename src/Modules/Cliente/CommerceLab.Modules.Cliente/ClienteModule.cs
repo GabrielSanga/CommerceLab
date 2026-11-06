@@ -1,6 +1,8 @@
 ﻿using CommerceLab.Modules.Cliente.Application.Abstracoes;
 using CommerceLab.Modules.Cliente.Application.CadastrarCliente;
 using CommerceLab.Modules.Cliente.Application.CadastrarEnderecoCliente;
+using CommerceLab.Modules.Cliente.Contracts.Clientes;
+using CommerceLab.Modules.Cliente.Infrastructure.Integracao;
 using CommerceLab.Modules.Cliente.Infrastructure.Persistencia;
 using CommerceLab.Modules.Cliente.Presentation.Cliente;
 using CommerceLab.Shared.Modules;
@@ -21,6 +23,7 @@ namespace CommerceLab.Modules.Cliente
         {
             AddHandlers(services);
             AddData(services, configuration);
+            AddIntegrations(services);
         }
 
         private static void AddData(IServiceCollection services, IConfiguration configuration)
@@ -41,6 +44,11 @@ namespace CommerceLab.Modules.Cliente
         {
             services.AddScoped<CadastrarClienteHandler>();
             services.AddScoped<CadastrarEnderecoClienteHandler>();
+        }
+
+        private static void AddIntegrations(IServiceCollection services)
+        {
+            services.AddScoped<IClienteSnapshotService, ClienteSnapshotService>();
         }
 
         public void MapEndpoints(IEndpointRouteBuilder endpoints)

@@ -1,12 +1,12 @@
 using CommerceLab.Modules.Catalogo.Contracts.Estoques;
 using CommerceLab.Modules.Catalogo.Contracts.Produtos;
+using CommerceLab.Modules.Cliente.Contracts.Clientes;
 using CommerceLab.Modules.Venda.Application.Abstracoes;
 using CommerceLab.Modules.Venda.Application.CadastrarPedido;
 using CommerceLab.Modules.Venda.Application.CadastrarPedido.Saga;
 using CommerceLab.Modules.Venda.Domain;
 using CommerceLab.Shared.Results;
 using CommerceLab.Shared.Sagas;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CommerceLab.Modules.Venda.UnitTests.Application.CadastrarPedido;
 
@@ -14,14 +14,60 @@ public class CadastrarPedidoHandlerTests
 {
 
     [Fact]
-    public async Task HandleAsync_DeveRetornarFalhaSemPersistir_QuandoProdutoNaoExistir()
+    public async Task HandleAsync_DeveRetornarFalhaSemPersistir_QuandoClienteNaoExistir()
     {
         var snapshots = new ProdutoSnapshotServiceStub();
+        var comando = ComandoValido();
+        snapshots.Adicionar(new ProdutoSnapshot(comando.Itens.First().IdProduto, "TEC-001", "Teclado", 199.90m, Ativo: true));
         var pedidos = new PedidoRepositorySpy();
         var estoque = new EstoqueServiceSpy();
         var unitOfWork = new UnitOfWorkSpy();
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork, ClienteSnapshotServiceStub.Vazio());
+
+        var resultado = await handler.HandleAsync(comando, CancellationToken.None);
+
+        Assert.False(resultado.Sucesso);
+        Assert.NotNull(resultado.Erro);
+        Assert.Equal("CLIENTE_NAO_ENCONTRADO", resultado.Erro.Codigo);
+        // O cliente é checado antes de qualquer efeito colateral: nada de baixa nem de persistência.
+        Assert.Null(estoque.ItensBaixados);
+        Assert.Equal(0, pedidos.QuantidadeAdicoes);
+        Assert.Equal(0, unitOfWork.QuantidadeCommits);
+    }
+
+    [Fact]
+    public async Task HandleAsync_DeveRetornarFalhaSemPersistir_QuandoEnderecoNaoForDoCliente()
+    {
+        var snapshots = new ProdutoSnapshotServiceStub();
         var comando = ComandoValido();
+        snapshots.Adicionar(new ProdutoSnapshot(comando.Itens.First().IdProduto, "TEC-001", "Teclado", 199.90m, Ativo: true));
+        var pedidos = new PedidoRepositorySpy();
+        var estoque = new EstoqueServiceSpy();
+        var unitOfWork = new UnitOfWorkSpy();
+        var clientes = new ClienteSnapshotServiceStub();
+        // O cliente existe, mas o endereço pedido é de outro.
+        clientes.Adicionar(new ClienteSnapshot(comando.IdCliente, "Cliente de Teste", [Guid.NewGuid()]));
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork, clientes);
+
+        var resultado = await handler.HandleAsync(comando, CancellationToken.None);
+
+        Assert.False(resultado.Sucesso);
+        Assert.NotNull(resultado.Erro);
+        Assert.Equal("ENDERECO_NAO_ENCONTRADO", resultado.Erro.Codigo);
+        Assert.Null(estoque.ItensBaixados);
+        Assert.Equal(0, pedidos.QuantidadeAdicoes);
+        Assert.Equal(0, unitOfWork.QuantidadeCommits);
+    }
+
+    [Fact]
+    public async Task HandleAsync_DeveRetornarFalhaSemPersistir_QuandoProdutoNaoExistir()
+    {
+        var snapshots = new ProdutoSnapshotServiceStub();
+        var comando = ComandoValido();
+        var pedidos = new PedidoRepositorySpy();
+        var estoque = new EstoqueServiceSpy();
+        var unitOfWork = new UnitOfWorkSpy();
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -42,7 +88,7 @@ public class CadastrarPedidoHandlerTests
         var pedidos = new PedidoRepositorySpy();
         var estoque = new EstoqueServiceSpy();
         var unitOfWork = new UnitOfWorkSpy();
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -61,8 +107,8 @@ public class CadastrarPedidoHandlerTests
         var pedidos = new PedidoRepositorySpy();
         var estoque = new EstoqueServiceSpy();
         var unitOfWork = new UnitOfWorkSpy();
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
         var comando = new CadastrarPedidoCommand(Guid.NewGuid(), Guid.NewGuid(), []);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -85,7 +131,7 @@ public class CadastrarPedidoHandlerTests
             Resultado = Result.Falha(Erro.Conflito("ESTOQUE_INSUFICIENTE", "Estoque insuficiente: disponível 4, solicitado 10."))
         };
         var unitOfWork = new UnitOfWorkSpy();
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -108,7 +154,7 @@ public class CadastrarPedidoHandlerTests
         var pedidos = new PedidoRepositorySpy();
         var estoque = new EstoqueServiceSpy();
         var unitOfWork = new UnitOfWorkSpy { ExcecaoNoCommit = new InvalidOperationException("falha no banco") };
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -131,7 +177,7 @@ public class CadastrarPedidoHandlerTests
         var pedidos = new PedidoRepositorySpy();
         var estoque = new EstoqueServiceSpy { ExcecaoNaBaixa = new InvalidOperationException("módulo Catálogo indisponível") };
         var unitOfWork = new UnitOfWorkSpy();
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -154,7 +200,7 @@ public class CadastrarPedidoHandlerTests
         var pedidos = new PedidoRepositorySpy();
         var estoque = new EstoqueServiceSpy();
         var unitOfWork = new UnitOfWorkSpy();
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -184,7 +230,7 @@ public class CadastrarPedidoHandlerTests
         var pedidos = new PedidoRepositorySpy();
         var estoque = new EstoqueServiceSpy();
         var unitOfWork = new UnitOfWorkSpy();
-        var handler = CriarHandler(snapshots, pedidos, estoque, unitOfWork);
+        var handler = CriarHandler(comando, snapshots, pedidos, estoque, unitOfWork);
 
         var resultado = await handler.HandleAsync(comando, CancellationToken.None);
 
@@ -196,15 +242,38 @@ public class CadastrarPedidoHandlerTests
         Assert.Equal(3, itemBaixado.Quantidade);
     }
 
-    private static CadastrarPedidoHandler CriarHandler(ProdutoSnapshotServiceStub snapshots, PedidoRepositorySpy pedidos,  EstoqueServiceSpy estoque, UnitOfWorkSpy unitOfWork)
+    private static CadastrarPedidoHandler CriarHandler(CadastrarPedidoCommand comando, ProdutoSnapshotServiceStub snapshots, PedidoRepositorySpy pedidos, EstoqueServiceSpy estoque, UnitOfWorkSpy unitOfWork, ClienteSnapshotServiceStub? clientes = null)
     {
+        // Sem indicação em contrário, o cliente do comando existe e é dono do endereço: os testes de produto e de estoque não precisam montar isso.
+        clientes ??= ClienteSnapshotServiceStub.ComClienteDoComando(comando);
+
         var orquestrador = new SagaOrchestrator<CadastrarPedidoContexto>([new BaixarEstoqueStep(estoque), new PersistirPedidoStep(pedidos, unitOfWork)]);
 
-        return new CadastrarPedidoHandler(snapshots, orquestrador);
+        return new CadastrarPedidoHandler(clientes, snapshots, orquestrador);
     }
 
     private static CadastrarPedidoCommand ComandoValido(int quantidade = 1) =>
         new(Guid.NewGuid(), Guid.NewGuid(), [new CadastrarPedidoItemCommand(Guid.NewGuid(), quantidade)]);
+
+    private sealed class ClienteSnapshotServiceStub : IClienteSnapshotService
+    {
+        private readonly Dictionary<Guid, ClienteSnapshot> _snapshots = [];
+
+        public static ClienteSnapshotServiceStub Vazio() => new();
+
+        public static ClienteSnapshotServiceStub ComClienteDoComando(CadastrarPedidoCommand comando)
+        {
+            var stub = new ClienteSnapshotServiceStub();
+            stub.Adicionar(new ClienteSnapshot(comando.IdCliente, "Cliente de Teste", [comando.IdEndereco]));
+
+            return stub;
+        }
+
+        public void Adicionar(ClienteSnapshot snapshot) => _snapshots[snapshot.Id] = snapshot;
+
+        public Task<ClienteSnapshot?> ObterPorIdAsync(Guid idCliente, CancellationToken cancellationToken) =>
+            Task.FromResult(_snapshots.GetValueOrDefault(idCliente));
+    }
 
     private sealed class ProdutoSnapshotServiceStub : IProdutoSnapshotService
     {
